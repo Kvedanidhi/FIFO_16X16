@@ -1,0 +1,42 @@
+`timescale 1ns / 1ps
+
+module top_module_tb;
+
+reg clk;
+reg rst;
+
+wire [15:0] received_data;
+wire data_valid;
+wire full;
+wire empty;
+
+top_module uut (
+    .clk(clk),
+    .rst(rst),
+    .received_data(received_data),
+    .data_valid(data_valid),
+    .full(full),
+    .empty(empty)
+);
+initial begin
+    clk = 0;
+    rst = 1;
+
+    repeat (5) @(negedge clk);
+
+    rst = 0;
+
+    repeat (100) @(negedge clk);
+
+    $finish;
+end
+
+always #10 clk = ~clk;
+
+always @(negedge clk) begin
+    if (data_valid)
+        $display("Time=%0t | Received Data=%d | Hex=%h",
+                 $time, received_data, received_data);
+end
+
+endmodule
